@@ -19,7 +19,6 @@ auto var(const auto& x) {
 
 auto resample(const auto& x) {
   // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
-  std::default_random_engine generator;  // TODO: don't make a new one on every resample
   std::uniform_int_distribution<> distribution(0, x.size() - 1);
 
   std::vector<int> replicate(x.size()); // TODO: get type from x
