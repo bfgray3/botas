@@ -7,7 +7,7 @@
 #include <vector>
 
 auto var(const auto& x) {
-  const auto x_bar = std::reduce(std::cbegin(x), std::cend(x), 0.0) / x.size();
+  const auto x_bar{std::reduce(std::cbegin(x), std::cend(x), 0.0) / x.size()};
   return std::transform_reduce(
     std::cbegin(x),
     std::cend(x),
@@ -38,19 +38,12 @@ int main() {
   std::vector<int> x(10);
   std::iota(std::begin(x), std::end(x), 0);
 
-  for (const auto& e: resample(x)) std::cout << e << '\n';
+  std::vector<double> results(500);
 
-/*
-psuedocode
-for i=1...500    <---- eventually split this into pieces and do on different cores
-  use function above to resample
-  calculate statistic on this replicate
-  add statistic to vector
-done
-
-look at distribution of the above
-*/
-
-  std::cout << var(x) << '\n';
-
+  for (std::size_t i{}; i < results.size(); ++i) {  // TODO: split this into pieces, do on different cores
+    const auto current_sample{resample(x)};
+    // TODO: calculate stat
+    // TODO: add stats to vector
+  }
+  std::cout << "variance: " << var(results) << '\n';
 }
