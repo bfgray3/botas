@@ -38,12 +38,13 @@ int main() {
   std::vector<int> x(10);
   std::iota(std::begin(x), std::end(x), 0);
 
-  std::vector<double> results(500);
+  std::vector<double> results(5);
 
   for (std::size_t i{}; i < results.size(); ++i) {  // TODO: split this into pieces, do on different cores
     const auto current_sample{resample(x)};
-    // TODO: calculate stat
-    // TODO: add stats to vector
+    for (const auto& e: current_sample) std::cout << e << '\n';
+    results[i] = var(current_sample);
+    std::cout << '\n';
   }
   std::cout << "variance: " << var(results) << '\n';
 }
