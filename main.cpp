@@ -1,8 +1,20 @@
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <numeric>
 #include <random>
 #include <vector>
+
+auto var(const auto& x) {
+  const auto x_bar = std::reduce(std::cbegin(x), std::cend(x)) / static_cast<double>(x.size());
+  return std::transform_reduce(
+    std::cbegin(x),
+    std::cend(x),
+    0.0,
+    std::plus<>(),
+    [x_bar](const auto xi) { return std::pow(xi - x_bar, 2); }
+  ) / (x.size() - 1);
+}
 
 auto resample(const auto& x) {
   // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
@@ -37,5 +49,7 @@ done
 
 look at distribution of the above
 */
+
+  std::cout << var(x) << '\n';
 
 }
