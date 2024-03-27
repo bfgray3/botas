@@ -7,7 +7,7 @@
 #include <vector>
 
 auto var(const auto& x) {
-  const auto x_bar = std::reduce(std::cbegin(x), std::cend(x)) / static_cast<double>(x.size());
+  const auto x_bar = std::reduce(std::cbegin(x), std::cend(x), 0.0) / x.size();
   return std::transform_reduce(
     std::cbegin(x),
     std::cend(x),
