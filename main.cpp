@@ -6,7 +6,8 @@
 #include <random>
 #include <vector>
 
-constexpr std::size_t NUM_REPLICATES{500};
+constexpr std::size_t N{500};
+constexpr std::size_t NUM_REPLICATES{100'000};
 
 auto var(const auto& x) {
   const auto x_bar{std::reduce(std::cbegin(x), std::cend(x), 0.0) / x.size()};
@@ -36,7 +37,7 @@ auto resample(const auto& x, auto& dev) {
 }
 
 int main() {
-  std::vector<int> x(10);
+  std::vector<int> x(N);
   std::iota(std::begin(x), std::end(x), 0);
 
   std::vector<double> results(NUM_REPLICATES);
@@ -46,5 +47,5 @@ int main() {
     const auto current_sample{resample(x, random_device)};
     results[i] = var(current_sample);
   }
-  std::cout << "variance: " << var(results) << '\n';
+  std::cout << var(results) << '\n';
 }
