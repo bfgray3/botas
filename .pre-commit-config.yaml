@@ -10,3 +10,14 @@ repos:
     -   id: ruff
         args: [--fix, --exit-non-zero-on-fix]
     -   id: ruff-format
+-   repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+    -   id: cppcheck
+        args: [--language=c++, --std=c++20]
+#    -   id: clang-tidy
+#        args: [--extra-arg=-std=c++20]
+-   repo: https://github.com/mrtazz/checkmake.git
+    rev: 0.2.2
+    hooks:
+    -   id: checkmake

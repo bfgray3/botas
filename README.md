@@ -34,5 +34,5 @@ this repository should be considered in an unusable state as of now and full of 
 to compare against the scipy implementation, run
 
 ```console
-$ make -s test
+$ make -s
 ```
