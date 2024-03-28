@@ -21,11 +21,12 @@ auto var(const auto& x) {
   ) / (n - 1);
 }
 
-auto resample(const auto& x, auto& dev) {
+template <typename T>
+auto resample(const T& x, auto& dev) {
   // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
 
-  std::vector<int> replicate(x.size()); // TODO: get type from x
+  std::vector<typename T::value_type> replicate(x.size());
   std::generate_n(
     std::begin(replicate),
     replicate.size(),
