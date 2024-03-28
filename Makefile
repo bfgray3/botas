@@ -1,7 +1,6 @@
 .PHONY: test
 
-# TODO: add -Wconversion
-CXXFLAGS = -Wall -Wextra -Wshadow -Werror -Wpedantic -std=c++23 -O3
+CXXFLAGS = -Wall -Wextra -Wshadow -Wconversion -Werror -Wpedantic -std=c++23 -O3
 CXX = g++
 
 test:

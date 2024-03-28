@@ -10,19 +10,20 @@ constexpr std::size_t N{500};
 constexpr std::size_t NUM_REPLICATES{100'000};
 
 auto var(const auto& x) {
-  const auto x_bar{std::reduce(std::cbegin(x), std::cend(x), 0.0) / x.size()};
+  const auto n{static_cast<double>(x.size())};
+  const auto x_bar{std::reduce(std::cbegin(x), std::cend(x), 0.0) / n};
   return std::transform_reduce(
     std::cbegin(x),
     std::cend(x),
     0.0,
     std::plus<>(),
     [x_bar](const auto xi) { return std::pow(xi - x_bar, 2); }
-  ) / (x.size() - 1);
+  ) / (n - 1);
 }
 
 auto resample(const auto& x, auto& dev) {
   // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
-  std::uniform_int_distribution<> distribution(0, x.size() - 1);
+  std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
 
   std::vector<int> replicate(x.size()); // TODO: get type from x
   std::generate_n(
