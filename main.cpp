@@ -25,16 +25,16 @@ template <typename T>
 auto resample(const T& x, auto& dev) {
   // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
-
   std::vector<typename T::value_type> replicate(x.size());
+
   std::generate_n(
     std::begin(replicate),
     replicate.size(),
-    // TODO: don't make a new generator for every sample
     [&x, &distribution, generator = std::default_random_engine{dev()}]() mutable {
       return x[distribution(generator)];
     }
   );
+
   return replicate;
 }
 
