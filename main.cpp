@@ -9,7 +9,7 @@
 constexpr std::size_t N{500};
 constexpr std::size_t NUM_REPLICATES{100'000};
 
-auto var(const auto& x) {
+auto var(const auto& x) {  // TODO: more careful about parameter type
   const auto n{static_cast<double>(x.size())};
   const auto x_bar{std::reduce(std::cbegin(x), std::cend(x), 0.0) / n};
   return std::transform_reduce(
@@ -22,7 +22,7 @@ auto var(const auto& x) {
 }
 
 template <typename T>
-auto resample(const T& x, auto& dev) {
+T resample(const T& x, auto& dev) {
   // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
   std::vector<typename T::value_type> replicate(x.size());
