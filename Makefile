@@ -1,6 +1,6 @@
 .PHONY: all clean test
 
-CXXFLAGS = -Wall -Wextra -Wshadow -Wconversion -Werror -Wpedantic -std=c++23 -O3
+CXXFLAGS = -Wall -Wextra -Wshadow -Wconversion -Werror -Wpedantic -std=c++20 -O3
 CXX = g++
 
 all: test
