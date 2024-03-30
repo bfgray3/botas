@@ -1,6 +1,18 @@
 # botas
 
-i'm thinking of writing a package for bootstrapping. here are some of the current ones:
+this is an in-progress c++ project for bootstrap inference with no dependencies outside the standard library. i might add a python wrapper later.
+
+this repository should be considered in an unusable state as of now and full of scratchwork.
+
+## testing
+
+to compare against the scipy implementation, run
+
+```console
+$ make -s
+```
+
+## inexhaustive list of other libraries
 
 * https://github.com/pmbaumgartner/boots
 * https://github.com/juliangehring/Bootstrap.jl
@@ -24,15 +36,3 @@ i'm thinking of writing a package for bootstrapping. here are some of the curren
 * https://cran.r-project.org/web/packages/bootstrap/index.html
 * https://cran.r-project.org/web/packages/rsample/index.html
 * https://github.com/facebookarchive/bootstrapped
-
-at first i'll write it in c++ with no dependencies outside the standard library. i might add a python wrapper later.
-
-this repository should be considered in an unusable state as of now and full of scratchwork.
-
-## testing
-
-to compare against the scipy implementation, run
-
-```console
-$ make -s
-```
