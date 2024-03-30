@@ -22,10 +22,9 @@ auto var(const auto& x) {  // TODO: more careful about parameter type
 }
 
 template <typename T>
-T resample(const T& x, auto& dev) {
+void resample(const T& x, T& replicate, auto& dev) {
   // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
-  std::vector<typename T::value_type> replicate(x.size());
 
   std::generate_n(
     std::begin(replicate),
@@ -35,19 +34,20 @@ T resample(const T& x, auto& dev) {
     }
   );
 
-  return replicate;
 }
 
 int main() {
-  std::vector<int> x(N);
-  std::iota(std::begin(x), std::end(x), 0);
+  std::vector<double> x(N), replicate(N), results(NUM_REPLICATES);
+  //std::iota(std::begin(x), std::end(x), 0);
+  for (std::size_t i{1}; i < x.size(); ++i) {
+    x[i] = x[i - 1] + 1.0;
+  }
 
-  std::vector<double> results(NUM_REPLICATES);
   std::random_device random_device;
 
   for (std::size_t i{}; i < results.size(); ++i) {  // TODO: split this into pieces, do on different cores
-    const auto current_sample{resample(x, random_device)};
-    results[i] = var(current_sample);
+    resample(x, replicate, random_device);
+    results[i] = var(replicate);
   }
   std::cout << var(results) << '\n';
 }
