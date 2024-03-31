@@ -1,2 +1,4 @@
 *
 !*.py
+!Makefile
+!*.cpp
