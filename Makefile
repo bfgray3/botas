@@ -1,4 +1,4 @@
-.PHONY: all clean test
+.PHONY: all clean sanitize test
 
 CXXFLAGS = -Wall -Wextra -Wshadow -Wconversion -Werror -Wpedantic -std=c++20 -O3
 CXX = g++
@@ -6,8 +6,12 @@ CXX = g++
 all: test
 
 clean:
-	rm a.out
+	rm -f a.out san*
 
 test:
 	echo botas && $(CXX) $(CXXFLAGS) main.cpp && /bin/time ./a.out  # FIXME: is this returning an integer instead of double??
 	echo scipy && /bin/time python3 script.py
+
+sanitize:
+	$(CXX) $(CXXFLAGS) main.cpp -fsanitize=address -fsanitize=undefined -o san1 && ./san1
+	$(CXX) $(CXXFLAGS) main.cpp -fsanitize=thread -o san2 && ./san2
