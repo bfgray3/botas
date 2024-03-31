@@ -15,7 +15,7 @@ clean:
 	rm -f main san*
 
 test: build-image
-	docker run -v $(shell pwd):/botas --rm -it botas bash -c "echo scipy && /bin/time python script.py && make main && echo botas && /bin/time ./main"
+	docker run -v $(shell pwd):/botas --rm botas bash -c "echo scipy && /bin/time python script.py && make main && echo botas && /bin/time ./main"
 
 sanitize:
 	$(CXX) $(CXXFLAGS) main.cpp -fsanitize=address -fsanitize=undefined -o san1 && ./san1
