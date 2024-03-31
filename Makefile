@@ -6,7 +6,7 @@ CXX = g++
 all: test
 
 build:
-	docker build . -t botas
+	docker build --pull . -t botas
 
 clean:
 	rm -f a.out san*
