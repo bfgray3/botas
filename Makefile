@@ -5,11 +5,11 @@ CXX = g++
 
 all: test
 
-clean:
-	rm -f a.out san*
-
 build:
 	docker build . -t botas
+
+clean:
+	rm -f a.out san*
 
 test:
 	docker run -v $(shell pwd):/botas --rm -it botas echo scipy && /bin/time python script.py && echo botas && $(CXX) $(CXXFLAGS) main.cpp && /bin/time ./a.out
