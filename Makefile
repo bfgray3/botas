@@ -9,8 +9,9 @@ clean:
 	rm -f a.out san*
 
 test:
+	docker build . -t botas
 	echo botas && $(CXX) $(CXXFLAGS) main.cpp && /bin/time ./a.out  # FIXME: is this returning an integer instead of double??
-	echo scipy && /bin/time python3 script.py
+	echo scipy && docker run -v $(shell pwd):/botas --rm -it botas /bin/time python script.py
 
 sanitize:
 	$(CXX) $(CXXFLAGS) main.cpp -fsanitize=address -fsanitize=undefined -o san1 && ./san1
