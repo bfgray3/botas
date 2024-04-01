@@ -27,13 +27,14 @@ void resample(const std::vector<double>& x, const std::vector<double>::iterator 
   std::random_device random_device;
   std::vector<double> replicate(x.size());
   auto current_position{start};
+  auto generator{std::default_random_engine{random_device()}};
 
   for (; current_position < start + num_replicates; ++current_position) {
     // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
     std::generate_n(
       std::begin(replicate),
       replicate.size(),
-      [&x = std::as_const(x), &distribution, generator = std::default_random_engine{random_device()}]() mutable {
+      [&x = std::as_const(x), &distribution, generator]() mutable {
         return x[distribution(generator)];
       }
     );
@@ -50,8 +51,8 @@ int main() {
   auto first_half{std::async(std::launch::async, resample, x, std::begin(results), HALF)};
   auto second_half{std::async(std::launch::async, resample, x, std::begin(results) + HALF, HALF)};
 
-  first_half.get();
-  second_half.get();
+  first_half.wait();
+  second_half.wait();
 
   std::cout << var(results) << '\n';
 }
