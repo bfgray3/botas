@@ -1,17 +1,29 @@
-.PHONY: all clean sanitize test
+.PHONY: all build-image clean sanitize test
 
-CXXFLAGS = -Wall -Wextra -Wshadow -Wconversion -Werror -Wpedantic -std=c++20 -O3
+CPPVERSION = 20
+CXXFLAGS = -Wall -Wextra -Wshadow -Wconversion -Werror -Wpedantic -std=c++$(CPPVERSION) -O3
 CXX = g++
 
 all: test
 
+build-image:
+	docker build --pull . -t botas
+
 clean:
-	rm -f a.out san*
+	rm -f main san*
 
-test:
-	echo botas && $(CXX) $(CXXFLAGS) main.cpp && /bin/time ./a.out  # FIXME: is this returning an integer instead of double??
-	echo scipy && /bin/time python3 script.py
+main:
+	$(CXX) $(CXXFLAGS) main.cpp -o main
 
-sanitize:
-	$(CXX) $(CXXFLAGS) main.cpp -fsanitize=address -fsanitize=undefined -o san1 && ./san1
-	$(CXX) $(CXXFLAGS) main.cpp -fsanitize=thread -o san2 && ./san2
+san-addr-undef:
+	$(CXX) -std=c++$(CPPVERSION) main.cpp -fsanitize=address -fsanitize=undefined -o san-addr-undef
+
+san-thread:
+	$(CXX) -std=c++$(CPPVERSION) main.cpp -fsanitize=thread -o san-thread
+
+sanitize: san-addr-undef san-thread
+	./san-addr-undef
+	./san-thread
+
+test: build-image
+	docker run -v $(shell pwd):/botas --rm botas bash -c "echo scipy && /bin/time python script.py && make main && echo botas && /bin/time ./main"
