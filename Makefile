@@ -12,13 +12,13 @@ build-image:
 clean:
 	rm -f main san*
 
-main:
+main: main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp -o main
 
-san-addr-undef:
+san-addr-undef: main.cpp
 	$(CXX) -std=c++$(CPPVERSION) main.cpp -fsanitize=address -fsanitize=undefined -o san-addr-undef
 
-san-thread:
+san-thread: main.cpp
 	$(CXX) -std=c++$(CPPVERSION) main.cpp -fsanitize=thread -o san-thread
 
 sanitize: san-addr-undef san-thread
