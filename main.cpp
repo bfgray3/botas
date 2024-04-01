@@ -7,9 +7,7 @@
 #include <random>
 #include <vector>
 
-constexpr std::size_t N{500};
-constexpr std::size_t NUM_REPLICATES{100'000};
-constexpr std::size_t HALF{NUM_REPLICATES / 2};  // FIXME: more robust
+constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, HALF{NUM_REPLICATES / 2};  // FIXME: more robust
 
 auto var(const auto& x) {  // TODO: more careful about parameter type
   const auto n{static_cast<double>(x.size())};
@@ -45,7 +43,6 @@ void resample(const std::vector<double>& x, const std::vector<double>::iterator 
 
 int main() {
   std::vector<double> x(N), results(NUM_REPLICATES);
-  //std::iota(std::begin(x), std::end(x), 0);
   for (std::size_t i{1}; i < x.size(); ++i) {
     x[i] = x[i - 1] + 1.0;
   }
