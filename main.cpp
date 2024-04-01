@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, HALF{NUM_REPLICATES / 2};  // FIXME: more robust
+constexpr std::size_t N{50'000}, NUM_REPLICATES{100'000}, HALF{NUM_REPLICATES / 2};  // FIXME: more robust
 
 auto var(const auto& x) {  // TODO: more careful about parameter type
   const auto n{static_cast<double>(x.size())};
