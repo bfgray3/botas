@@ -3,7 +3,7 @@ from functools import partial
 import numpy as np
 from scipy.stats import bootstrap
 
-N = 50_000
+N = 500
 NUM_REPLICATES = 100_000
 
 print(

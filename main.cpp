@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
-constexpr std::size_t N{50'000}, NUM_REPLICATES{100'000}, HALF{NUM_REPLICATES / 2};  // FIXME: more robust
+constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{2}, REPLICATES_PER_THREAD{NUM_REPLICATES / NUM_THREADS};  // TODO: more careful division
 
-auto var(const auto& x) {  // TODO: more careful about parameter type
+[[nodiscard]] auto var(const auto& x) {  // TODO: more careful about parameter type
   const auto n{static_cast<double>(x.size())};
   const auto x_bar{std::reduce(std::cbegin(x), std::cend(x), 0.0) / n};
   return std::transform_reduce(
@@ -49,11 +49,28 @@ int main() {
     x[i] = x[i - 1] + 1.0;
   }
 
-  auto first_half{std::async(std::launch::async, resample, x, std::begin(results), HALF)};
-  auto second_half{std::async(std::launch::async, resample, x, std::begin(results) + HALF, HALF)};
+  std::vector<std::size_t> starts(NUM_THREADS);
+  std::iota(std::begin(starts), std::end(starts), 0);
+  std::transform(
+    std::begin(starts),
+    std::end(starts),
+    std::begin(starts),
+    [](auto i) {return i * REPLICATES_PER_THREAD;}
+  ); // FIXME: more robust
+  for (const auto& e: starts) std::cout << e << '\n';
 
-  first_half.wait();
-  second_half.wait();
+  std::vector<std::future<void>> futures(NUM_THREADS); // TODO: can i avoid specifying the size here?
+
+  std::transform(
+    std::cbegin(starts),
+    std::cend(starts),
+    std::begin(futures),
+    [&x, &results](const auto s) { return std::async(std::launch::async, resample, x, std::begin(results) + s, REPLICATES_PER_THREAD); }
+  );
+
+  for (auto& f: futures) {
+    f.wait();
+  }
 
   std::cout << var(results) << '\n';
 }
