@@ -30,7 +30,7 @@ void resample(const std::vector<double>& x, const std::vector<double>::iterator 
   auto current_position{start};
   auto generator{std::mt19937{random_device()}};
 
-  for (; current_position < start + REPLICATES_PER_THREAD; ++current_position) {
+  for (; current_position < start + REPLICATES_PER_THREAD; ++current_position) { // TODO: make REPLICATES_PER_THREAD into a parameter here
     // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
     std::generate_n(
       std::begin(replicate),
@@ -49,14 +49,13 @@ int main() {
     x[i] = x[i - 1] + 1.0;
   }
 
-  // TODO: cleanup type
   std::vector<std::future<void>> futures(NUM_THREADS);
 
   for (std::size_t i{}; i < futures.size(); ++i) {
     futures[i] = std::async(std::launch::async, resample, x, std::begin(results) + REPLICATES_PER_THREAD * i);
   }
 
-  for (auto& f: futures) {
+  for (const auto& f: futures) {
     f.wait();
   }
 
