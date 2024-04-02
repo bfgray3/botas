@@ -22,6 +22,7 @@ constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{2}, REPLICATE
   ) / (n - 1);
 }
 
+// TODO: write to shared results vector directly, don't make our own smaller vector
 // TODO: more general types
 [[nodiscard]] std::vector<double> resample(const std::vector<double>& x) {
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
@@ -50,13 +51,17 @@ int main() {
     x[i] = x[i - 1] + 1.0;
   }
 
-  auto first_half{std::async(std::launch::async, resample, x)};
-  auto second_half{std::async(std::launch::async, resample, x)};
-  auto fh = first_half.get();
-  auto sh = second_half.get();
+  // TODO: cleanup type
+  std::vector<std::future<std::vector<double>>> futures(NUM_THREADS);
 
-  results.insert(results.end(), fh.begin(), fh.end());
-  results.insert(results.end(), sh.begin(), sh.end());
+  for (std::size_t i{}; i < futures.size(); ++i) {
+    futures[i] = std::async(std::launch::async, resample, x);
+  }
+
+  for (auto& f: futures) {
+    auto result{f.get()}; // TODO: declare outside of the loop??
+    results.insert(std::end(results), std::begin(result), std::end(result));
+  }
 
   std::cout << var(results) << '\n';
 }
