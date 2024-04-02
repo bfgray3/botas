@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{2}, REPLICATES_PER_THREAD{NUM_REPLICATES / NUM_THREADS};  // TODO: more careful division
+constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{1}, REPLICATES_PER_THREAD{NUM_REPLICATES / NUM_THREADS};  // TODO: more careful division
 
 [[nodiscard]] auto var(const auto& x) {  // TODO: more careful about parameter type
   const auto n{static_cast<double>(x.size())};
@@ -23,54 +23,37 @@ constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{2}, REPLICATE
 }
 
 // TODO: more general types
-void resample(const std::vector<double>& x, const std::vector<double>::iterator start, const std::size_t num_replicates) {
+[[nodiscard]] std::vector<double> resample(const std::vector<double>& x) {
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
   std::random_device random_device;
-  std::vector<double> replicate(x.size());
-  auto current_position{start};
-  auto generator{std::default_random_engine{random_device()}};
+  std::vector<double> replicate(x.size()), answer(REPLICATES_PER_THREAD);
+  auto generator{std::mt19937{random_device()}};
 
-  for (; current_position < start + num_replicates; ++current_position) {
+  for (std::size_t i{}; i < answer.size(); ++i) {
     // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
     std::generate_n(
       std::begin(replicate),
       replicate.size(),
-      [&x = std::as_const(x), &distribution, generator]() mutable {
+      [&x = std::as_const(x), &distribution, &generator]() mutable {
         return x[distribution(generator)];
       }
     );
-    *current_position = var(replicate);
+    answer[i] = var(replicate);
   }
+  return answer;
 }
 
 int main() {
-  std::vector<double> x(N), results(NUM_REPLICATES);
+  std::vector<double> x(N), results;
+  results.reserve(NUM_REPLICATES);
   for (std::size_t i{1}; i < x.size(); ++i) {
     x[i] = x[i - 1] + 1.0;
   }
 
-  std::vector<std::size_t> starts(NUM_THREADS);
-  std::iota(std::begin(starts), std::end(starts), 0);
-  std::transform(
-    std::begin(starts),
-    std::end(starts),
-    std::begin(starts),
-    [](auto i) {return i * REPLICATES_PER_THREAD;}
-  ); // FIXME: more robust
-  for (const auto& e: starts) std::cout << e << '\n';
+  auto first_half{std::async(std::launch::async, resample, x)};
+  auto fh = first_half.get();
 
-  std::vector<std::future<void>> futures(NUM_THREADS); // TODO: can i avoid specifying the size here?
-
-  std::transform(
-    std::cbegin(starts),
-    std::cend(starts),
-    std::begin(futures),
-    [&x, &results](const auto s) { return std::async(std::launch::async, resample, x, std::begin(results) + s, REPLICATES_PER_THREAD); }
-  );
-
-  for (auto& f: futures) {
-    f.wait();
-  }
+  results.insert(results.end(), fh.begin(), fh.end());
 
   std::cout << var(results) << '\n';
 }
