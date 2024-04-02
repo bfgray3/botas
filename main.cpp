@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{1}, REPLICATES_PER_THREAD{NUM_REPLICATES / NUM_THREADS};  // TODO: more careful division
+constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{2}, REPLICATES_PER_THREAD{NUM_REPLICATES / NUM_THREADS};  // TODO: more careful division
 
 [[nodiscard]] auto var(const auto& x) {  // TODO: more careful about parameter type
   const auto n{static_cast<double>(x.size())};
@@ -51,9 +51,12 @@ int main() {
   }
 
   auto first_half{std::async(std::launch::async, resample, x)};
+  auto second_half{std::async(std::launch::async, resample, x)};
   auto fh = first_half.get();
+  auto sh = second_half.get();
 
   results.insert(results.end(), fh.begin(), fh.end());
+  results.insert(results.end(), sh.begin(), sh.end());
 
   std::cout << var(results) << '\n';
 }
