@@ -22,15 +22,15 @@ constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{2}, REPLICATE
   ) / (n - 1);
 }
 
-// TODO: write to shared results vector directly, don't make our own smaller vector
 // TODO: more general types
-[[nodiscard]] std::vector<double> resample(const std::vector<double>& x) {
+void resample(const std::vector<double>& x, const std::vector<double>::iterator start) {
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
   std::random_device random_device;
-  std::vector<double> replicate(x.size()), answer(REPLICATES_PER_THREAD);
+  std::vector<double> replicate(x.size());
+  auto current_position{start};
   auto generator{std::mt19937{random_device()}};
 
-  for (std::size_t i{}; i < answer.size(); ++i) {
+  for (; current_position < start + REPLICATES_PER_THREAD; ++current_position) {
     // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
     std::generate_n(
       std::begin(replicate),
@@ -39,28 +39,25 @@ constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{2}, REPLICATE
         return x[distribution(generator)];
       }
     );
-    answer[i] = var(replicate);
+    *current_position = var(replicate);
   }
-  return answer;
 }
 
 int main() {
-  std::vector<double> x(N), results;
-  results.reserve(NUM_REPLICATES);
+  std::vector<double> x(N), results(NUM_REPLICATES);
   for (std::size_t i{1}; i < x.size(); ++i) {
     x[i] = x[i - 1] + 1.0;
   }
 
   // TODO: cleanup type
-  std::vector<std::future<std::vector<double>>> futures(NUM_THREADS);
+  std::vector<std::future<void>> futures(NUM_THREADS);
 
   for (std::size_t i{}; i < futures.size(); ++i) {
-    futures[i] = std::async(std::launch::async, resample, x);
+    futures[i] = std::async(std::launch::async, resample, x, std::begin(results) + REPLICATES_PER_THREAD * i);
   }
 
   for (auto& f: futures) {
-    auto result{f.get()}; // TODO: declare outside of the loop??
-    results.insert(std::end(results), std::begin(result), std::end(result));
+    f.wait();
   }
 
   std::cout << var(results) << '\n';
