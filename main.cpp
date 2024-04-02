@@ -29,7 +29,7 @@ void resample(const T& x, T& replicate, auto& dev) {
   std::generate_n(
     std::begin(replicate),
     replicate.size(),
-    [&x, &distribution, generator = std::default_random_engine{dev()}]() mutable {
+    [&x, &distribution, generator = std::mt19937{dev()}]() mutable {
       return x[distribution(generator)];
     }
   );
