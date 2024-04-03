@@ -31,10 +31,9 @@ void resample(
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
   std::random_device random_device;
   std::vector<double> replicate(x.size());
-  auto current_position{start};
   auto generator{std::mt19937{random_device()}};
 
-  for (; current_position < start + num_replicates; ++current_position) {
+  for (auto current_position{start}; current_position < start + num_replicates; ++current_position) {
     // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
     std::generate_n(
       std::begin(replicate),
@@ -56,7 +55,13 @@ int main() {
   std::vector<std::future<void>> futures(NUM_THREADS);
 
   for (std::size_t i{}; i < futures.size(); ++i) {
-    futures[i] = std::async(std::launch::async, resample, x, std::begin(results) + REPLICATES_PER_THREAD * i, REPLICATES_PER_THREAD);
+    futures[i] = std::async(
+      std::launch::async,
+      resample,
+      x,
+      std::begin(results) + REPLICATES_PER_THREAD * i,
+      REPLICATES_PER_THREAD
+    );
   }
 
   for (const auto& f: futures) {
