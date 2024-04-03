@@ -23,14 +23,18 @@ constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{2}, REPLICATE
 }
 
 // TODO: more general types
-void resample(const std::vector<double>& x, const std::vector<double>::iterator start) {
+void resample(
+  const std::vector<double>& x,
+  const std::vector<double>::iterator start,
+  const std::size_t num_replicates
+) {
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
   std::random_device random_device;
   std::vector<double> replicate(x.size());
   auto current_position{start};
   auto generator{std::mt19937{random_device()}};
 
-  for (; current_position < start + REPLICATES_PER_THREAD; ++current_position) { // TODO: make REPLICATES_PER_THREAD into a parameter here
+  for (; current_position < start + num_replicates; ++current_position) {
     // adapted from https://stackoverflow.com/questions/42926209/equivalent-function-to-numpy-random-choice-in-c
     std::generate_n(
       std::begin(replicate),
@@ -52,7 +56,7 @@ int main() {
   std::vector<std::future<void>> futures(NUM_THREADS);
 
   for (std::size_t i{}; i < futures.size(); ++i) {
-    futures[i] = std::async(std::launch::async, resample, x, std::begin(results) + REPLICATES_PER_THREAD * i);
+    futures[i] = std::async(std::launch::async, resample, x, std::begin(results) + REPLICATES_PER_THREAD * i, REPLICATES_PER_THREAD);
   }
 
   for (const auto& f: futures) {
