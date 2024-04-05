@@ -46,9 +46,14 @@ void resample(
   }
 }
 
+//TODO: more careful type for x
 double bootstrap(const auto& x, const std::size_t num_replicates, const std::size_t num_threads) {
   std::vector<std::future<void>> futures(num_threads);
   std::vector<double> results(num_replicates);
+
+  if (num_replicates % num_threads) {
+    throw "need to handle case where num_threads doesn't divide num_replicates evenly";
+  }
 
   const auto replicates_per_thread{num_replicates / num_threads};  // TODO: more careful
 
