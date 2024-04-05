@@ -3,6 +3,7 @@
 CPPVERSION = 20
 CXXFLAGS = -Wall -Wextra -Wshadow -Wconversion -Werror -Wpedantic -std=c++$(CPPVERSION) -O3
 CXX = g++
+MAIN_CPP = main.cpp
 
 all: test
 
@@ -13,13 +14,13 @@ clean:
 	rm -f main san*
 
 main: main.cpp
-	$(CXX) $(CXXFLAGS) main.cpp -o main
+	$(CXX) $(CXXFLAGS) $(MAIN_CPP) -o $@
 
 san-addr-undef: main.cpp
-	$(CXX) -std=c++$(CPPVERSION) main.cpp -fsanitize=address -fsanitize=undefined -o san-addr-undef
+	$(CXX) -std=c++$(CPPVERSION) $(MAIN_CPP) -fsanitize=address -fsanitize=undefined -o $@
 
 san-thread: main.cpp
-	$(CXX) -std=c++$(CPPVERSION) main.cpp -fsanitize=thread -o san-thread
+	$(CXX) -std=c++$(CPPVERSION) $(MAIN_CPP) -fsanitize=thread -o $@
 
 sanitize: san-addr-undef san-thread
 	./san-addr-undef
