@@ -47,7 +47,7 @@ void resample(
 }
 
 //TODO: more careful type for x
-double bootstrap(const auto& x, const std::size_t num_replicates, const std::size_t num_threads) {
+[[nodiscard]] double bootstrap(const auto& x, const std::size_t num_replicates, const std::size_t num_threads) {
   std::vector<std::future<void>> futures(num_threads);
   std::vector<double> results(num_replicates);
 
