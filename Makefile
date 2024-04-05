@@ -4,6 +4,8 @@ CPPVERSION = 20
 CXXFLAGS = -Wall -Wextra -Wshadow -Wconversion -Werror -Wpedantic -std=c++$(CPPVERSION) -O3
 CXX = g++
 MAIN_CPP = main.cpp
+N = 500
+NUM_REPLICATES = 100000
 
 all: test
 
@@ -23,8 +25,8 @@ san-thread: main.cpp
 	$(CXX) -std=c++$(CPPVERSION) $(MAIN_CPP) -fsanitize=thread -o $@
 
 sanitize: san-addr-undef san-thread
-	./san-addr-undef
-	./san-thread
+	./san-addr-undef $(N) $(NUM_REPLICATES)
+	./san-thread $(N) $(NUM_REPLICATES)
 
 test: build-image
-	docker run --name scipy-botas -v $(shell pwd):/botas --rm botas 500 100000
+	docker run --name scipy-botas -v $(shell pwd):/botas --rm botas $(N) $(NUM_REPLICATES)
