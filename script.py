@@ -1,10 +1,10 @@
+import sys
 from functools import partial
 
 import numpy as np
 from scipy.stats import bootstrap
 
-N = 500
-NUM_REPLICATES = 100_000
+N, NUM_REPLICATES = (int(arg) for arg in sys.argv[1:])
 
 print(
     bootstrap(

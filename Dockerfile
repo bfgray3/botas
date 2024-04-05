@@ -15,3 +15,5 @@ RUN : \
   && :
 
 WORKDIR botas
+
+ENTRYPOINT ["./compare.sh"]
