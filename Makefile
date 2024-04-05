@@ -26,4 +26,4 @@ sanitize: san-addr-undef san-thread
 	./san-thread
 
 test: build-image
-	docker run --name scipy-botas -v $(shell pwd):/botas --rm botas bash -c "echo scipy && /bin/time python script.py && make main && echo botas && /bin/time ./main"
+	docker run --name scipy-botas -v $(shell pwd):/botas --rm botas 500 100000
