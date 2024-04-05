@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <functional>
 #include <future>
 #include <iostream>
@@ -8,7 +9,8 @@
 #include <utility>
 #include <vector>
 
-constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{2}, REPLICATES_PER_THREAD{NUM_REPLICATES / NUM_THREADS};  // TODO: more careful division
+//constexpr std::size_t N{5'000}, NUM_REPLICATES{100'000}, NUM_THREADS{5}, REPLICATES_PER_THREAD{NUM_REPLICATES / NUM_THREADS};  // TODO: more careful division
+constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{5}, REPLICATES_PER_THREAD{NUM_REPLICATES / NUM_THREADS};  // TODO: more careful division
 
 [[nodiscard]] auto var(const auto& x) {  // TODO: more careful about parameter type
   const auto n{static_cast<double>(x.size())};
@@ -46,13 +48,10 @@ void resample(
   }
 }
 
-int main() {
-  std::vector<double> x(N), results(NUM_REPLICATES);
-  for (std::size_t i{1}; i < x.size(); ++i) {
-    x[i] = x[i - 1] + 1.0;
-  }
-
-  std::vector<std::future<void>> futures(NUM_THREADS);
+double bootstrap(const auto& x, const std::size_t num_replicates, const std::size_t num_threads) {
+  // TODO: calculate replicates per thread here
+  std::vector<std::future<void>> futures(num_threads);
+  std::vector<double> results(num_replicates);
 
   for (std::size_t i{}; i < futures.size(); ++i) {
     futures[i] = std::async(
@@ -68,5 +67,14 @@ int main() {
     f.wait();
   }
 
-  std::cout << var(results) << '\n';
+  return var(results);
+}
+
+int main() {
+  std::vector<double> x(N);
+  for (std::size_t i{1}; i < x.size(); ++i) {
+    x[i] = x[i - 1] + 1.0;
+  }
+
+  std::cout << bootstrap(x, NUM_REPLICATES, NUM_THREADS) << '\n';
 }
