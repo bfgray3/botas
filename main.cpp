@@ -6,11 +6,9 @@
 #include <iostream>
 #include <numeric>
 #include <random>
+#include <sstream>
 #include <utility>
 #include <vector>
-
-//constexpr std::size_t N{5'000}, NUM_REPLICATES{100'000}, NUM_THREADS{5}, REPLICATES_PER_THREAD{NUM_REPLICATES / NUM_THREADS};  // TODO: more careful division
-constexpr std::size_t N{500}, NUM_REPLICATES{100'000}, NUM_THREADS{5}, REPLICATES_PER_THREAD{NUM_REPLICATES / NUM_THREADS};  // TODO: more careful division
 
 [[nodiscard]] auto var(const auto& x) {  // TODO: more careful about parameter type
   const auto n{static_cast<double>(x.size())};
@@ -49,17 +47,18 @@ void resample(
 }
 
 double bootstrap(const auto& x, const std::size_t num_replicates, const std::size_t num_threads) {
-  // TODO: calculate replicates per thread here
   std::vector<std::future<void>> futures(num_threads);
   std::vector<double> results(num_replicates);
+
+  const auto replicates_per_thread{num_replicates / num_threads};  // TODO: more careful
 
   for (std::size_t i{}; i < futures.size(); ++i) {
     futures[i] = std::async(
       std::launch::async,
       resample,
       x,
-      std::begin(results) + REPLICATES_PER_THREAD * i,
-      REPLICATES_PER_THREAD
+      std::begin(results) + replicates_per_thread * i,
+      replicates_per_thread
     );
   }
 
@@ -70,11 +69,16 @@ double bootstrap(const auto& x, const std::size_t num_replicates, const std::siz
   return var(results);
 }
 
-int main() {
-  std::vector<double> x(N);
+int main(const int, const char** argv) {
+  std::stringstream stream;
+  std::size_t n, num_replicates;
+  stream << argv[1] << ' ' << argv[2];
+  stream >> n >> num_replicates;
+
+  std::vector<double> x(n);
   for (std::size_t i{1}; i < x.size(); ++i) {
     x[i] = x[i - 1] + 1.0;
   }
 
-  std::cout << bootstrap(x, NUM_REPLICATES, NUM_THREADS) << '\n';
+  std::cout << bootstrap(x, num_replicates, 5) << '\n';
 }
