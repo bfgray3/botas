@@ -25,8 +25,8 @@
 // TODO: more general types
 void resample(
   const std::vector<double>& x,
-  const std::vector<double>::iterator start,
-  const std::size_t num_replicates
+  const std::size_t num_replicates,
+  const std::vector<double>::iterator start
 ) {
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
   std::random_device random_device;
@@ -51,20 +51,20 @@ void resample(
   std::vector<std::future<void>> futures(num_threads);
   std::vector<double> results(num_replicates);
 
-  if (num_replicates % num_threads) {
-    throw "need to handle case where num_threads doesn't divide num_replicates evenly";
-  }
-
-  const auto replicates_per_thread{num_replicates / num_threads};  // TODO: more careful
-
-  for (std::size_t i{}; i < futures.size(); ++i) {
+  for (
+    std::size_t i{}, num_replicates_so_far{}, num_replicates_per_thread{num_replicates / num_threads}, num_replicates_this_thread{};
+    i < futures.size() && num_replicates_so_far < num_replicates;
+    ++i
+  ) {
+    num_replicates_this_thread = std::min(num_replicates_per_thread, num_replicates - num_replicates_so_far);
     futures[i] = std::async(
       std::launch::async,
       resample,
       x,
-      std::begin(results) + replicates_per_thread * i,
-      replicates_per_thread
+      num_replicates_this_thread,
+      std::begin(results) + num_replicates_so_far
     );
+    num_replicates_so_far += num_replicates_this_thread;
   }
 
   for (const auto& f: futures) {
