@@ -52,11 +52,11 @@ void resample(
   std::vector<double> results(num_replicates);
 
   for (
-    std::size_t i{}, num_replicates_so_far{}, num_replicates_per_thread{num_replicates / num_threads}, num_replicates_this_thread{};
+    std::size_t i{}, num_replicates_so_far{}, num_replicates_per_thread{std::max(1ul, num_replicates / num_threads)}, num_replicates_this_thread{};
     i < futures.size() && num_replicates_so_far < num_replicates; // this is wrong if e.g. 11 replicates, 2 threads
     ++i
   ) {
-    num_replicates_this_thread = std::min(num_replicates_per_thread, num_replicates - num_replicates_so_far); // this is wrong if e.g. 1 replicate, 5 threads
+    num_replicates_this_thread = std::min(num_replicates_per_thread, num_replicates - num_replicates_so_far);
     futures[i] = std::async(
       std::launch::async,
       resample,
