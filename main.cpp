@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-[[nodiscard]] auto var(const auto& x) {  // TODO: more careful about parameter type
+[[nodiscard]] constexpr auto var(const auto& x) {  // TODO: more careful about parameter type
   const auto n{static_cast<double>(x.size())};
   const auto x_bar{std::reduce(std::cbegin(x), std::cend(x), 0.0) / n};
   return std::transform_reduce(
