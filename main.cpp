@@ -51,8 +51,10 @@ void resample(
   std::vector<std::future<void>> futures(num_threads);
   std::vector<double> results(num_replicates);
 
+  const std::size_t num_replicates_per_thread{std::max(1ul, num_replicates / num_threads)};
+
   for (
-    std::size_t i{}, num_replicates_so_far{}, num_replicates_per_thread{std::max(1ul, num_replicates / num_threads)}, num_replicates_this_thread{}, num_leftover{num_replicates % num_threads};
+    std::size_t i{}, num_replicates_so_far{}, num_replicates_this_thread{}, num_leftover{num_replicates % num_threads};
     i < futures.size() && num_replicates_so_far < num_replicates;
     ++i
   ) {
