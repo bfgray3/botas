@@ -56,7 +56,7 @@ void resample(
     i < futures.size() && num_replicates_so_far < num_replicates;
     ++i
   ) {
-    num_replicates_this_thread = std::min(num_replicates_per_thread, num_replicates - num_replicates_so_far);  // TODO: can this just be num_replicates_per_thread?
+    num_replicates_this_thread = num_replicates_per_thread;
 
     if (num_leftover) {
       ++num_replicates_this_thread;
