@@ -28,9 +28,9 @@ void resample(
   const std::size_t num_replicates,
   const std::vector<double>::iterator start
 ) {
+  std::vector<double> replicate(x.size());
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
   std::random_device random_device;
-  std::vector<double> replicate(x.size());
   auto generator{std::mt19937{random_device()}};
 
   for (auto current_position{start}; current_position < start + num_replicates; ++current_position) {
@@ -52,11 +52,17 @@ void resample(
   std::vector<double> results(num_replicates);
 
   for (
-    std::size_t i{}, num_replicates_so_far{}, num_replicates_per_thread{std::max(1ul, num_replicates / num_threads)}, num_replicates_this_thread{};
-    i < futures.size() && num_replicates_so_far < num_replicates; // this is wrong if e.g. 11 replicates, 2 threads
+    std::size_t i{}, num_replicates_so_far{}, num_replicates_per_thread{std::max(1ul, num_replicates / num_threads)}, num_replicates_this_thread{}, num_leftover{num_replicates % num_threads};
+    i < futures.size() && num_replicates_so_far < num_replicates;
     ++i
   ) {
-    num_replicates_this_thread = std::min(num_replicates_per_thread, num_replicates - num_replicates_so_far);
+    num_replicates_this_thread = std::min(num_replicates_per_thread, num_replicates - num_replicates_so_far);  // TODO: can this just be num_replicates_per_thread?
+
+    if (num_leftover) {
+      ++num_replicates_this_thread;
+      --num_leftover;
+    }
+
     futures[i] = std::async(
       std::launch::async,
       resample,
