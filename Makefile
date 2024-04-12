@@ -5,7 +5,7 @@ CXXFLAGS = -Wall -Wextra -Wshadow -Wconversion -Werror -Wpedantic -std=c++$(CPPV
 CXX = g++
 MAIN_CPP = main.cpp
 N = 500
-NUM_REPLICATES = 100000
+NUM_REPLICATES = 100001
 
 all: test
 
