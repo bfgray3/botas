@@ -26,12 +26,12 @@
 }
 
 void resample(
-  const std::vector<double>& x, // TODO: more general
+  const std::vector<double>& x,  // TODO: more general
   const std::size_t num_replicates,
-  const std::vector<double>::iterator start, // TODO: more general
-  const std::function<double(const std::vector<double>&)> statistic // TODO: more general
+  const std::vector<double>::iterator start,  // TODO: more general
+  const std::function<double(const std::vector<double>&)> statistic  // TODO: more general
 ) {
-  std::vector<double> replicate(x.size()); // TODO: template type??
+  std::vector<double> replicate(x.size());  // TODO: get type from x
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);  // TODO: uz
   std::random_device random_device;
   auto generator{std::mt19937{random_device()}};
@@ -49,12 +49,11 @@ void resample(
   }
 }
 
-//TODO: more careful type for x
 [[nodiscard]] double bootstrap(
-  const std::ranges::contiguous_range auto& x, // TODO: concepts
+  const std::ranges::contiguous_range auto& x,  // TODO: type in the range
   const std::size_t num_replicates,
   const std::size_t num_threads,
-  const std::function<double(const std::vector<double>&)> statistic // TODO: more general
+  const std::function<double(const std::vector<double>&)> statistic  // TODO: more general
 ) {
   std::vector<std::future<void>> futures(num_threads);
   std::vector<double> results(num_replicates);
