@@ -12,10 +12,11 @@
 #include <utility>
 #include <vector>
 
-using Statistic = std::function<double(const std::vector<double>&)>;  // TODO: more general
+using Sample = std::vector<double>;  // TODO: more general
+using Statistic = std::function<double(const Sample&)>;  // TODO: more general
 
 // TODO: constexpr
-[[nodiscard]] double var(const std::vector<double>& x) {  // TODO: more general types
+[[nodiscard]] double var(const Sample& x) {  // TODO: more general types
   const auto n{static_cast<double>(x.size())};
   const auto x_bar{std::reduce(std::cbegin(x), std::cend(x), 0.0) / n};
   return std::transform_reduce(
@@ -28,12 +29,12 @@ using Statistic = std::function<double(const std::vector<double>&)>;  // TODO: m
 }
 
 void resample(
-  const std::vector<double>& x,  // TODO: more general
+  const Sample& x,
   const std::size_t num_replicates,
-  const std::vector<double>::iterator start,  // TODO: more general
+  const Sample::iterator start,  // TODO: more general
   const Statistic statistic
 ) {
-  std::vector<double> replicate(x.size());  // TODO: get type from x
+  Sample replicate(x.size());  // TODO: get type from x
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);  // TODO: uz
   std::random_device random_device;
   auto generator{std::mt19937{random_device()}};
@@ -52,13 +53,13 @@ void resample(
 }
 
 [[nodiscard]] double bootstrap(
-  const std::ranges::contiguous_range auto& x,  // TODO: type in the range
+  const Sample& x,
   const std::size_t num_replicates,
   const std::size_t num_threads,
   const Statistic statistic
 ) {
   std::vector<std::future<void>> futures(num_threads);
-  std::vector<double> results(num_replicates);
+  Sample results(num_replicates);
 
   const auto num_replicates_per_thread{std::max(1ul, num_replicates / num_threads)};  // TODO: uz
 
@@ -98,7 +99,7 @@ int main(const int, const char** argv) {
   stream << argv[1] << ' ' << argv[2];
   stream >> n >> num_replicates;
 
-  std::vector<double> x(n);
+  Sample x(n);
   for (std::size_t i{1}; i < x.size(); ++i) {
     x[i] = x[i - 1] + 1.0;
   }
