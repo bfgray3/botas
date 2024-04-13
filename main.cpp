@@ -10,7 +10,8 @@
 #include <utility>
 #include <vector>
 
-[[nodiscard]] constexpr auto var(const auto& x) {  // TODO: more careful about parameter type
+// TODO: constexpr
+[[nodiscard]] double var(const std::vector<double>& x) {  // TODO: more general types
   const auto n{static_cast<double>(x.size())};
   const auto x_bar{std::reduce(std::cbegin(x), std::cend(x), 0.0) / n};
   return std::transform_reduce(
@@ -18,7 +19,7 @@
     std::cend(x),
     0.0,
     std::plus<>(),
-    [x_bar](const auto xi) { return std::pow(xi - x_bar, 2); }
+    [x_bar](const auto xi) { return std::pow(xi - x_bar, 2); } // TODO: type
   ) / (n - 1);
 }
 
@@ -26,7 +27,8 @@
 void resample(
   const std::vector<double>& x,
   const std::size_t num_replicates,
-  const std::vector<double>::iterator start
+  const std::vector<double>::iterator start,
+  const std::function<double(const std::vector<double>)> statistic
 ) {
   std::vector<double> replicate(x.size());
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
@@ -42,12 +44,17 @@ void resample(
         return x[distribution(generator)];
       }
     );
-    *current_position = var(replicate);
+    *current_position = statistic(replicate);
   }
 }
 
 //TODO: more careful type for x
-[[nodiscard]] double bootstrap(const auto& x, const std::size_t num_replicates, const std::size_t num_threads) {
+[[nodiscard]] double bootstrap(
+  const auto& x,
+  const std::size_t num_replicates,
+  const std::size_t num_threads,
+  const std::function<double(const std::vector<double>)> statistic // TODO: more general types
+) {
   std::vector<std::future<void>> futures(num_threads);
   std::vector<double> results(num_replicates);
 
@@ -70,7 +77,8 @@ void resample(
       resample,
       x,
       num_replicates_this_thread,
-      std::begin(results) + num_replicates_so_far
+      std::begin(results) + num_replicates_so_far,
+      statistic
     );
     num_replicates_so_far += num_replicates_this_thread;
   }
@@ -93,5 +101,5 @@ int main(const int, const char** argv) {
     x[i] = x[i - 1] + 1.0;
   }
 
-  std::cout << bootstrap(x, num_replicates, 5) << '\n';
+  std::cout << bootstrap(x, num_replicates, 5, var) << '\n';
 }
