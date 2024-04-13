@@ -1,18 +1,18 @@
 # botas
 
-this is an in-progress c++ project for bootstrap inference with no dependencies outside the standard library. i might add a python wrapper later.
+this is an in-progress c++ project for bootstrap inference with no dependencies outside the standard library. i might add a python wrapper later. the goal is to be fast and use little memory.
 
-this repository should be considered in an unusable state as of now and full of scratchwork.
+this repository should be considered full of scratchwork and not yet usable.
 
 ## testing
 
 to compare against the scipy implementation, run
 
 ```console
-$ make -s
+$ make
 ```
 
-## inexhaustive list of other libraries
+## inexhaustive list of other bootstrapping libraries
 
 * https://github.com/pmbaumgartner/boots
 * https://github.com/juliangehring/Bootstrap.jl
