@@ -12,6 +12,8 @@
 #include <utility>
 #include <vector>
 
+using Statistic = std::function<double(const std::vector<double>&)>;  // TODO: more general
+
 // TODO: constexpr
 [[nodiscard]] double var(const std::vector<double>& x) {  // TODO: more general types
   const auto n{static_cast<double>(x.size())};
@@ -29,7 +31,7 @@ void resample(
   const std::vector<double>& x,  // TODO: more general
   const std::size_t num_replicates,
   const std::vector<double>::iterator start,  // TODO: more general
-  const std::function<double(const std::vector<double>&)> statistic  // TODO: more general
+  const Statistic statistic
 ) {
   std::vector<double> replicate(x.size());  // TODO: get type from x
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);  // TODO: uz
@@ -53,7 +55,7 @@ void resample(
   const std::ranges::contiguous_range auto& x,  // TODO: type in the range
   const std::size_t num_replicates,
   const std::size_t num_threads,
-  const std::function<double(const std::vector<double>&)> statistic  // TODO: more general
+  const Statistic statistic
 ) {
   std::vector<std::future<void>> futures(num_threads);
   std::vector<double> results(num_replicates);
