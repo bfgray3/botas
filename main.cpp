@@ -6,7 +6,6 @@
 #include <future>
 #include <iostream>
 #include <numeric>
-#include <ranges>
 #include <random>
 #include <sstream>
 #include <utility>
