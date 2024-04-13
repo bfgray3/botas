@@ -8,6 +8,7 @@
 #include <numeric>
 #include <random>
 #include <sstream>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
@@ -33,8 +34,10 @@ void resample(
   const Sample::iterator start,
   const Statistic statistic
 ) {
+  if (x.empty()) {
+    throw std::length_error("sample can't have 0 observations");
+  }
   Sample replicate(x.size());
-  // TODO: should i bother checking for postive size?
   std::uniform_int_distribution<std::size_t> distribution(0ul, x.size() - 1);  // TODO: uz
   std::random_device random_device;
   auto generator{std::mt19937{random_device()}};
