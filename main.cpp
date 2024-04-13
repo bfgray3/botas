@@ -15,7 +15,7 @@ using Sample = std::vector<double>;  // TODO: more general
 using Statistic = std::function<double(const Sample&)>;  // TODO: more general
 
 // TODO: constexpr
-[[nodiscard]] double var(const Sample& x) {  // TODO: more general types
+[[nodiscard]] double var(const Sample& x) {
   const auto n{static_cast<double>(x.size())};
   const auto x_bar{std::reduce(std::cbegin(x), std::cend(x), 0.0) / n};
   return std::transform_reduce(
@@ -30,10 +30,10 @@ using Statistic = std::function<double(const Sample&)>;  // TODO: more general
 void resample(
   const Sample& x,
   const std::size_t num_replicates,
-  const Sample::iterator start,  // TODO: more general
+  const Sample::iterator start,
   const Statistic statistic
 ) {
-  Sample replicate(x.size());  // TODO: get type from x
+  Sample replicate(x.size());
   std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);  // TODO: uz
   std::random_device random_device;
   auto generator{std::mt19937{random_device()}};
