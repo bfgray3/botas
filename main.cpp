@@ -34,7 +34,8 @@ void resample(
   const Statistic statistic
 ) {
   Sample replicate(x.size());
-  std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);  // TODO: uz
+  // TODO: should i bother checking for postive size?
+  std::uniform_int_distribution<std::size_t> distribution(0ul, x.size() - 1);  // TODO: uz
   std::random_device random_device;
   auto generator{std::mt19937{random_device()}};
 
