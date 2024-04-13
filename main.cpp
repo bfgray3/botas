@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <concepts>
 #include <cstdint>
 #include <functional>
 #include <future>
@@ -19,19 +20,18 @@
     std::cend(x),
     0.0,
     std::plus<>(),
-    [x_bar](const auto xi) { return std::pow(xi - x_bar, 2); } // TODO: type
+    [x_bar](const std::floating_point auto xi) { return std::pow(xi - x_bar, 2); }
   ) / (n - 1);
 }
 
-// TODO: more general types
 void resample(
-  const std::vector<double>& x,
+  const std::vector<double>& x, // TODO: more general
   const std::size_t num_replicates,
-  const std::vector<double>::iterator start,
-  const std::function<double(const std::vector<double>)> statistic
+  const std::vector<double>::iterator start, // TODO: more general
+  const std::function<double(const std::vector<double>)> statistic // TODO: more general
 ) {
   std::vector<double> replicate(x.size());
-  std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);
+  std::uniform_int_distribution<std::size_t> distribution(0, x.size() - 1);  // TODO: uz
   std::random_device random_device;
   auto generator{std::mt19937{random_device()}};
 
@@ -50,7 +50,7 @@ void resample(
 
 //TODO: more careful type for x
 [[nodiscard]] double bootstrap(
-  const auto& x,
+  const auto& x, // TODO: concepts
   const std::size_t num_replicates,
   const std::size_t num_threads,
   const std::function<double(const std::vector<double>)> statistic // TODO: more general types
@@ -58,7 +58,7 @@ void resample(
   std::vector<std::future<void>> futures(num_threads);
   std::vector<double> results(num_replicates);
 
-  const std::size_t num_replicates_per_thread{std::max(1ul, num_replicates / num_threads)};
+  const std::size_t num_replicates_per_thread{std::max(1ul, num_replicates / num_threads)};  // TODO: uz
 
   for (
     std::size_t i{}, num_replicates_so_far{}, num_replicates_this_thread{}, num_leftover{num_replicates % num_threads};
