@@ -12,8 +12,21 @@
 #include <utility>
 #include <vector>
 
+using ConfidenceInterval = std::pair<double, double>; // TODO: more general
 using Sample = std::vector<double>;  // TODO: more general
 using Statistic = std::function<double(const Sample&)>;  // TODO: more general
+
+template <typename T>
+constexpr std::pair<std::size_t, std::size_t> find_percentile_indices(
+  const std::vector<T>& v,
+  const double confidence_level
+) {
+  const auto len{static_cast<double>(v.size())};
+  return {
+    static_cast<std::size_t>((1 - confidence_level) * len),
+    static_cast<std::size_t>(confidence_level * len)
+  };
+}
 
 // TODO: constexpr
 [[nodiscard]] double var(const Sample& x) {
@@ -55,11 +68,12 @@ void resample(
   }
 }
 
-[[nodiscard]] double bootstrap(
+[[nodiscard]] std::pair<double, ConfidenceInterval> bootstrap(
   const Sample& x,
   const std::size_t num_replicates,
   const std::size_t num_threads,
-  const Statistic statistic
+  const Statistic statistic,
+  const double confidence_level = 0.95
 ) {
   std::vector<std::future<void>> futures(num_threads);
   Sample results(num_replicates);
@@ -93,7 +107,12 @@ void resample(
     f.wait();
   }
 
-  return var(results);
+  std::sort(std::begin(results), std::end(results));
+
+  const auto variance{var(results)};
+  const auto [lower_idx, upper_idx] = find_percentile_indices(results, confidence_level);
+
+  return {variance, {results[lower_idx], results[upper_idx]}};
 }
 
 int main(const int, const char** argv) {
@@ -107,5 +126,7 @@ int main(const int, const char** argv) {
     x[i] = x[i - 1] + 1.0;
   }
 
-  std::cout << bootstrap(x, num_replicates, 5, var) << '\n';
+  const auto boot{bootstrap(x, num_replicates, 5, var)};
+
+  std::cout << "variance: " << boot.first << "; confidence_interval: (" << boot.second.first << ", " << boot.second.second << ")\n";
 }
