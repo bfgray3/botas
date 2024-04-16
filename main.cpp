@@ -12,13 +12,13 @@
 #include <utility>
 #include <vector>
 
-using ConfidenceInterval = std::pair<double, double>; // TODO: more general
+using ConfidenceInterval = std::pair<double, double>;  // TODO: more general
 using Sample = std::vector<double>;  // TODO: more general
 using Statistic = std::function<double(const Sample&)>;  // TODO: more general
 
 template <typename T>
 constexpr std::pair<std::size_t, std::size_t> find_percentile_indices(
-  const std::vector<T>& v,
+  const std::vector<T>& v,  // TODO: more general
   const double confidence_level
 ) {
   const auto len{static_cast<double>(v.size())};
