@@ -2,7 +2,7 @@ FROM python:3.12
 
 RUN : \
   && apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends time \
+  && DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends python3-dev time \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && :
