@@ -25,3 +25,6 @@ repos:
     rev: v0.9.0.6
     hooks:
     -   id: shellcheck
+
+ci:
+    skip: [cppcheck, clang-tidy]  # FIXME: #36
