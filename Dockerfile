@@ -14,6 +14,6 @@ RUN : \
   && pip --no-cache-dir install numpy scipy \
   && :
 
-WORKDIR botas
+WORKDIR /usr/src/botas
 
 ENTRYPOINT ["./compare.sh"]

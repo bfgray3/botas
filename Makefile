@@ -29,4 +29,4 @@ sanitize: san-addr-undef san-thread
 	./san-thread $(N) $(NUM_REPLICATES)
 
 test: build-image
-	docker run --name scipy-botas -v $(shell pwd):/botas --rm botas $(N) $(NUM_REPLICATES)
+	docker run --name scipy-botas -v $(shell pwd):/usr/src/botas --rm botas $(N) $(NUM_REPLICATES)
