@@ -1,5 +1,7 @@
 FROM python:3.12
 
+ENV PYTHONUNBUFFERED 1
+
 RUN : \
   && apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends python3-dev time \

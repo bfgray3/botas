@@ -1,8 +1,11 @@
+#include <vector>
+
 #include <Python.h>
 
 static PyObject* foo_cpp(PyObject*, PyObject* o) {
   double x = PyFloat_AsDouble(o);
-  return PyFloat_FromDouble(x + 1.0);
+  constexpr std::vector<int> v{5, 5, 6};
+  return PyFloat_FromDouble(x + 1.0 + static_cast<double>(v.size()));
 }
 
 static PyMethodDef methods[] = {
