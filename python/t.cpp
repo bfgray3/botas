@@ -2,9 +2,27 @@
 
 #include <Python.h>
 
+
+#include <vector>
+#include <utility>
+
+
+template <typename T>
+constexpr std::pair<std::size_t, std::size_t> find_percentile_indices(
+  const std::vector<T>& v,  // TODO: more general
+  const double confidence_level
+) {
+  const auto len{static_cast<double>(v.size())};
+  return {
+    static_cast<std::size_t>((1 - confidence_level) * len),
+    static_cast<std::size_t>(confidence_level * len)
+  };
+}
+
+
 static PyObject* foo_cpp(PyObject*, PyObject* o) {
   double x = PyFloat_AsDouble(o);
-  constexpr std::vector<int> v{5, 5, 6};
+  std::vector<int> v{5, 5, 6};
   return PyFloat_FromDouble(x + 1.0 + static_cast<double>(v.size()));
 }
 
