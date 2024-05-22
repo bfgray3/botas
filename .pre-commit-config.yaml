@@ -17,7 +17,7 @@ repos:
         args: [--language=c++, --std=c++20]
     -   id: clang-tidy
         args: [--extra-arg=-std=c++20]
--   repo: https://github.com/mrtazz/checkmake.git
+-   repo: https://github.com/mrtazz/checkmake
     rev: 0.2.2
     hooks:
     -   id: checkmake
