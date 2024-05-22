@@ -7,13 +7,14 @@ RUN : \
   && rm -rf /var/lib/apt/lists/* \
   && :
 
-ENV PATH=/venv/bin:$PATH
+WORKDIR /usr/src/botas
+
+ENV PATH=/venv/bin:$PATH PYTHONUNBUFFERED=1
 
 RUN : \
-  && python -m venv /venv \
-  && pip --no-cache-dir install numpy scipy \
+  && python3 -m venv /venv \
+  && pip --no-cache-dir --disable-pip-version-check install --upgrade numpy scipy \
   && :
 
-WORKDIR /usr/src/botas
 
 ENTRYPOINT ["./compare.sh"]
