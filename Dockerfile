@@ -16,5 +16,4 @@ RUN : \
   && pip --no-cache-dir --disable-pip-version-check install --upgrade numpy scipy \
   && :
 
-
 ENTRYPOINT ["./compare.sh"]
