@@ -13,7 +13,7 @@ build-image:
 	docker build --pull . -t botas
 
 clean:
-	rm -f main san*
+	rm -f main san* __pycache__
 
 main: main.cpp
 	$(CXX) $(CXXFLAGS) $(MAIN_CPP) -o $@
